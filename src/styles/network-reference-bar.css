@@ -1,0 +1,267 @@
+/**
+ * Network Reference Bar Styles
+ * 网络请求引用栏样式
+ */
+
+#network-reference-container {
+  width: 100%;
+  background: transparent;
+  transition: all 0.3s ease;
+  position: fixed;
+  bottom: 60px; /* 输入框高度的估计值，需要根据实际调整 */
+  left: 0;
+  right: 0;
+  z-index: 999;
+  max-height: 300px;
+  overflow: hidden;
+  /* 当display为none时不占用空间 */
+}
+
+.network-reference-bar {
+  width: 100%;
+  max-height: 300px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-color, #ffffff);
+  border-top: 1px solid var(--border-color, #e0e0e0);
+}
+
+/* 引用栏头部 */
+.reference-header {
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  background: var(--message-bg, #f5f5f5);
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s ease;
+  gap: 8px;
+}
+
+.reference-header:hover {
+  background: var(--hover-bg, #e8e8e8);
+}
+
+.expand-icon {
+  font-size: 12px;
+  color: var(--text-secondary, #666666);
+  transition: transform 0.2s ease;
+  min-width: 16px;
+}
+
+.reference-info {
+  flex: 1;
+  font-size: 13px;
+  color: var(--text-color, #333333);
+  font-weight: 500;
+}
+
+.remove-all-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary, #666666);
+  transition: all 0.2s ease;
+  opacity: 0.7;
+}
+
+.remove-all-btn:hover {
+  background: var(--error-bg, rgba(255, 59, 48, 0.1));
+  color: var(--error-color, #ff3b30);
+  opacity: 1;
+}
+
+/* 引用详情 */
+.reference-details {
+  max-height: 250px;
+  overflow-y: auto;
+  background: var(--bg-color, #ffffff);
+  border-top: 1px solid var(--border-color, #e0e0e0);
+}
+
+/* 请求列表 */
+.reference-list {
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* 单个引用项 */
+.reference-item {
+  background: var(--message-bg, #f5f5f5);
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 6px;
+  padding: 8px 10px;
+  transition: all 0.2s ease;
+}
+
+.reference-item:hover {
+  background: var(--hover-bg, #e8e8e8);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.item-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.item-method {
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+  text-transform: uppercase;
+  min-width: 45px;
+  text-align: center;
+}
+
+.method-get {
+  background: rgba(76, 175, 80, 0.1);
+  color: #4caf50;
+}
+
+.method-post {
+  background: rgba(33, 150, 243, 0.1);
+  color: #2196f3;
+}
+
+.method-put {
+  background: rgba(255, 152, 0, 0.1);
+  color: #ff9800;
+}
+
+.method-delete {
+  background: rgba(244, 67, 54, 0.1);
+  color: #f44336;
+}
+
+.method-patch {
+  background: rgba(156, 39, 176, 0.1);
+  color: #9c27b0;
+}
+
+.item-status {
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+  min-width: 35px;
+  text-align: center;
+}
+
+.status-success {
+  background: rgba(76, 175, 80, 0.1);
+  color: #4caf50;
+}
+
+.status-redirect {
+  background: rgba(255, 193, 7, 0.1);
+  color: #ffc107;
+}
+
+.status-client-error {
+  background: rgba(255, 152, 0, 0.1);
+  color: #ff9800;
+}
+
+.status-server-error {
+  background: rgba(244, 67, 54, 0.1);
+  color: #f44336;
+}
+
+.item-url {
+  flex: 1;
+  color: var(--text-color, #333333);
+  font-family: 'Consolas', 'Monaco', monospace;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+}
+
+.remove-item-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 3px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary, #666666);
+  transition: all 0.2s ease;
+  opacity: 0;
+  flex-shrink: 0;
+}
+
+.reference-item:hover .remove-item-btn {
+  opacity: 0.7;
+}
+
+.remove-item-btn:hover {
+  background: var(--error-bg, rgba(255, 59, 48, 0.1));
+  color: var(--error-color, #ff3b30);
+  opacity: 1 !important;
+}
+
+/* 滚动条样式 */
+.reference-details::-webkit-scrollbar {
+  width: 6px;
+}
+
+.reference-details::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.reference-details::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb, #cccccc);
+  border-radius: 3px;
+}
+
+.reference-details::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover, #999999);
+}
+
+/* 深色模式适配 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --error-bg: rgba(255, 69, 58, 0.15);
+    --error-color: #ff453a;
+  }
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .reference-header {
+    padding: 8px 12px;
+  }
+
+  .reference-info {
+    font-size: 12px;
+  }
+
+  .item-header {
+    font-size: 11px;
+    gap: 6px;
+  }
+
+  .item-method,
+  .item-status {
+    font-size: 10px;
+    padding: 2px 4px;
+    min-width: 40px;
+  }
+
+  .item-url {
+    font-size: 11px;
+  }
+}

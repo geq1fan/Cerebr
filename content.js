@@ -502,6 +502,30 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         return true;
     }
 
+    // 处理来自 DevTools 的网络数据
+    if (message.type === 'NETWORK_DATA_FROM_DEVTOOLS') {
+        console.log('[Content] Forwarding', message.requests?.length, 'network requests to sidebar');
+        try {
+            const iframe = sidebar?.sidebar?.querySelector('.cerebr-sidebar__iframe');
+            if (iframe && iframe.contentWindow) {
+                iframe.contentWindow.postMessage({
+                    type: 'NETWORK_DATA_FROM_DEVTOOLS',
+                    requests: message.requests,
+                    source: message.source,
+                    timestamp: message.timestamp
+                }, '*');
+                sendResponse({ received: true, sidebarVisible: sidebar?.isVisible });
+            } else {
+                console.warn('[Content] Sidebar iframe not found');
+                sendResponse({ received: false, sidebarVisible: false });
+            }
+        } catch (error) {
+            console.error('[Content] Failed to forward network data:', error);
+            sendResponse({ received: false, error: error.message });
+        }
+        return true;
+    }
+
     return true;
 });
 

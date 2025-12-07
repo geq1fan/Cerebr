@@ -1,0 +1,262 @@
+/**
+ * NetworkMonitor Component Styles
+ * Dark theme matching Cerebr sidebar
+ */
+
+.network-monitor {
+  background: #1e1e1e;
+  color: #cccccc;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 13px;
+}
+
+.network-monitor-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #888;
+}
+
+.network-monitor-empty .hint {
+  font-size: 12px;
+  margin-top: 8px;
+  color: #666;
+}
+
+.network-monitor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #333;
+}
+
+.network-monitor-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.network-monitor-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Buttons */
+.nm-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.nm-btn-primary {
+  background: #569cd6;
+  color: #fff;
+}
+
+.nm-btn-primary:hover {
+  background: #4a8bc2;
+}
+
+.nm-btn-secondary {
+  background: #404040;
+  color: #cccccc;
+  border: 1px solid #555;
+}
+
+.nm-btn-secondary:hover {
+  background: #505050;
+}
+
+.nm-btn-icon {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 4px;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.nm-btn-icon:hover {
+  opacity: 1;
+}
+
+/* Request List */
+.network-monitor-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nm-request-item {
+  background: #252525;
+  border: 1px solid #333;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.nm-request-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.nm-request-summary:hover {
+  background: #2a2a2a;
+}
+
+.nm-expand-icon {
+  width: 12px;
+  font-size: 10px;
+  color: #888;
+}
+
+.nm-method {
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 3px;
+  min-width: 50px;
+  text-align: center;
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.nm-method-GET { background: #4ec9b0; color: #000; }
+.nm-method-POST { background: #569cd6; color: #000; }
+.nm-method-PUT { background: #dcdcaa; color: #000; }
+.nm-method-DELETE { background: #f48771; color: #000; }
+.nm-method-PATCH { background: #c586c0; color: #000; }
+.nm-method-HEAD { background: #9cdcfe; color: #000; }
+.nm-method-OPTIONS { background: #808080; color: #000; }
+
+.nm-status {
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-weight: 600;
+  font-size: 10px;
+}
+
+.nm-status-2xx { background: #1e6e1e; color: #4ec94e; }
+.nm-status-3xx { background: #7a4f1a; color: #d2a35f; }
+.nm-status-4xx { background: #7a2f1a; color: #f48771; }
+.nm-status-5xx { background: #6b1313; color: #f14c4c; }
+
+.nm-url {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #9cdcfe;
+  font-size: 12px;
+}
+
+/* Request Details */
+.nm-request-details {
+  padding: 12px;
+  background: #1e1e1e;
+  border-top: 1px solid #333;
+}
+
+.nm-section {
+  margin-bottom: 16px;
+}
+
+.nm-section:last-child {
+  margin-bottom: 0;
+}
+
+.nm-section h4 {
+  margin: 0 0 8px 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #dcdcaa;
+}
+
+.nm-truncated {
+  font-size: 11px;
+  color: #f48771;
+  font-weight: normal;
+}
+
+.nm-headers {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nm-header-row {
+  display: flex;
+  gap: 8px;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.nm-header-name {
+  font-weight: 600;
+  color: #9cdcfe;
+  min-width: 120px;
+}
+
+.nm-header-value {
+  color: #cccccc;
+  word-break: break-all;
+}
+
+.nm-code {
+  background: #0d0d0d;
+  border: 1px solid #333;
+  border-radius: 4px;
+  padding: 12px;
+  overflow-x: auto;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #d4d4d4;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.nm-no-body {
+  color: #888;
+  font-style: italic;
+  font-size: 12px;
+}
+
+.nm-timing {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: #cccccc;
+}
+
+/* Scrollbar styling for code blocks */
+.nm-code::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.nm-code::-webkit-scrollbar-track {
+  background: #1e1e1e;
+}
+
+.nm-code::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 4px;
+}
+
+.nm-code::-webkit-scrollbar-thumb:hover {
+  background: #666;
+}

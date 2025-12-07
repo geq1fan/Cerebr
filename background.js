@@ -268,6 +268,70 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
   }
 
+  // 处理来自 DevTools 的网络数据转发
+  if (message.type === 'SEND_NETWORK_TO_AI') {
+    (async () => {
+      try {
+        const targetTabId = message.tabId;
+
+        console.log('[Background] Forwarding', message.requests.length, 'requests to tab', targetTabId);
+
+        try {
+          // 尝试直接发送到内容脚本
+          const response = await chrome.tabs.sendMessage(targetTabId, {
+            type: 'NETWORK_DATA_FROM_DEVTOOLS',
+            requests: message.requests,
+            source: 'devtools',
+            timestamp: Date.now()
+          });
+
+          if (response?.received) {
+            sendResponse({ success: true });
+          } else {
+            sendResponse({ success: false, error: 'NO_RESPONSE' });
+          }
+        } catch (error) {
+          // 侧边栏未打开 - 尝试自动打开
+          console.warn('[Background] Sidebar not open, attempting auto-open...');
+
+          try {
+            // 尝试打开侧边栏
+            await chrome.tabs.sendMessage(targetTabId, {
+              type: 'TOGGLE_SIDEBAR_onClicked'
+            });
+
+            // 等待侧边栏初始化
+            await new Promise(r => setTimeout(r, 500));
+
+            // 重试发送数据
+            const retryResponse = await chrome.tabs.sendMessage(targetTabId, {
+              type: 'NETWORK_DATA_FROM_DEVTOOLS',
+              requests: message.requests,
+              source: 'devtools',
+              timestamp: Date.now()
+            });
+
+            if (retryResponse?.received) {
+              sendResponse({ success: true, autoOpened: true });
+            } else {
+              sendResponse({ success: false, error: 'SIDEBAR_FAILED_TO_OPEN' });
+            }
+          } catch (retryError) {
+            sendResponse({
+              success: false,
+              error: 'SIDEBAR_NOT_AVAILABLE',
+              message: '请手动打开 Cerebr 侧边栏 (Alt+Z)'
+            });
+          }
+        }
+      } catch (error) {
+        sendResponse({ success: false, error: error.message });
+      }
+    })();
+
+    return true; // 异步响应
+  }
+
   return false;
 });
 

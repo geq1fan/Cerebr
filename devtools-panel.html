@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cerebr Network Monitor</title>
+  <style>
+    /* DevTools dark theme */
+    body {
+      margin: 0;
+      padding: 0;
+      background: #1e1e1e;
+      color: #cccccc;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 12px;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: #2a2a2a;
+      border-bottom: 1px solid #3c3c3c;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 4px 12px;
+      background: #404040;
+      color: #cccccc;
+      border: 1px solid #555;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 11px;
+    }
+
+    button:hover {
+      background: #505050;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    input[type="checkbox"] {
+      cursor: pointer;
+    }
+
+    label {
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .requests-container {
+      overflow-y: auto;
+      height: calc(100vh - 100px);
+    }
+
+    .request-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 12px;
+      border-bottom: 1px solid #2a2a2a;
+      cursor: pointer;
+    }
+
+    .request-item:hover {
+      background: #2a2a2a;
+    }
+
+    .request-checkbox {
+      cursor: pointer;
+    }
+
+    .method {
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 3px;
+      min-width: 50px;
+      text-align: center;
+      font-size: 10px;
+    }
+
+    .method-GET { background: #4ec9b0; color: #000; }
+    .method-POST { background: #569cd6; color: #000; }
+    .method-PUT { background: #dcdcaa; color: #000; }
+    .method-DELETE { background: #f48771; color: #000; }
+    .method-PATCH { background: #c586c0; color: #000; }
+    .method-HEAD { background: #9cdcfe; color: #000; }
+    .method-OPTIONS { background: #808080; color: #000; }
+
+    .status {
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-weight: 600;
+      font-size: 10px;
+    }
+
+    .status-2xx { background: #1e6e1e; color: #4ec94e; }
+    .status-3xx { background: #7a4f1a; color: #d2a35f; }
+    .status-4xx { background: #7a2f1a; color: #f48771; }
+    .status-5xx { background: #6b1313; color: #f14c4c; }
+
+    .url {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .action-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 8px 12px;
+      background: #2a2a2a;
+      border-top: 1px solid #3c3c3c;
+      display: flex;
+      gap: 8px;
+    }
+
+    .toast {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #333;
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+      animation: fadeIn 0.2s, fadeOut 0.2s 2.8s;
+      z-index: 10000;
+    }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: #888;
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .request-count {
+      margin-left: auto;
+      font-weight: 600;
+    }
+
+    input[type="text"] {
+      background: #1e1e1e;
+      border: 1px solid #555;
+      color: #cccccc;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+    }
+
+    select {
+      background: #1e1e1e;
+      border: 1px solid #555;
+      color: #cccccc;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <button id="clear-btn">🗑️ Clear</button>
+    <button id="refresh-btn">🔄 Refresh</button>
+
+    <div class="filter-group">
+      <input type="checkbox" id="select-all-toggle">
+      <label for="select-all-toggle">Select All</label>
+    </div>
+
+    <div class="filter-group">
+      <input type="checkbox" id="auto-capture-toggle" checked>
+      <label for="auto-capture-toggle">Auto-capture</label>
+    </div>
+
+    <div class="filter-group">
+      <input type="checkbox" id="xhr-only-toggle">
+      <label for="xhr-only-toggle">XHR/Fetch only</label>
+    </div>
+
+    <div class="filter-group">
+      <label for="status-filter">Status:</label>
+      <select id="status-filter">
+        <option value="all">All</option>
+        <option value="success">2xx Success</option>
+        <option value="errors">4xx/5xx Errors</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label for="url-filter">URL:</label>
+      <input type="text" id="url-filter" placeholder="Filter by URL (regex)" style="width: 150px;">
+    </div>
+
+    <span class="request-count">
+      Captured: <strong id="request-count">0</strong>
+    </span>
+  </div>
+
+  <!-- Request List -->
+  <div class="requests-container" id="requests-container">
+    <div class="empty-state">
+      等待网络请求...
+    </div>
+  </div>
+
+  <!-- Action Bar -->
+  <div class="action-bar">
+    <button id="send-to-ai-btn">✨ Send to Cerebr AI (<span id="selected-count">0</span>)</button>
+    <button id="copy-selected-btn">📋 Copy Selected</button>
+    <button id="export-har-btn">💾 Export HAR</button>
+  </div>
+
+  <script src="devtools-panel.js"></script>
+</body>
+</html>

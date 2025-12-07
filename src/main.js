@@ -18,6 +18,8 @@ import {
 } from './components/chat-list.js';
 import { initWebpageMenu, getEnabledTabsContent } from './components/webpage-menu.js';
 import { initQuickChat, toggleQuickChatOptions } from './components/quick-chat.js';
+import { NetworkMonitor } from './components/network-monitor.js';
+import { NetworkReferenceBar } from './components/network-reference-bar.js';
 
 // 存储用户的问题历史
 let userQuestions = [];
@@ -26,6 +28,9 @@ let userQuestions = [];
 // 加载保存的 API 配置
 let apiConfigs = [];
 let selectedConfigIndex = 0;
+
+// 将 networkReferenceBar 提升到模块作用域，确保消息监听器能访问
+let networkReferenceBar = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
     const chatContainer = document.getElementById('chat-container');
@@ -195,6 +200,21 @@ document.addEventListener('DOMContentLoaded', async () => {
             const hasMessages = currentChat && currentChat.messages && currentChat.messages.length > 0;
             toggleQuickChatOptions(!hasMessages);
         }
+
+        // 处理来自 DevTools 的网络请求数据
+        if (event.data.type === 'NETWORK_DATA_FROM_DEVTOOLS') {
+            console.log('[Main] Received network requests from DevTools:', event.data.requests?.length);
+
+            // 添加到引用栏
+            if (event.data.requests && event.data.requests.length > 0) {
+                if (networkReferenceBar) {
+                    networkReferenceBar.addRequests(event.data.requests);
+                    console.log('[Main] Network requests added to reference bar');
+                } else {
+                    console.warn('[Main] NetworkReferenceBar not initialized yet');
+                }
+            }
+        }
     });
 
     // 新增：带重试逻辑的API调用函数
@@ -322,8 +342,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!message.trim() && imageTags.length === 0) return;
 
         try {
+            // 获取网络请求引用
+            const networkReferences = networkReferenceBar ? networkReferenceBar.getRequests() : [];
+            let finalMessage = message;
+
+            // 如果有网络请求引用，将其格式化并添加到消息开头
+            if (networkReferences.length > 0 && networkReferenceBar) {
+                const formattedReferences = networkReferenceBar.formatRequestsForAI();
+                finalMessage = formattedReferences + '\n\n---\n\n' + message;
+
+                // 发送后清空引用栏
+                networkReferenceBar.clear();
+            }
+
             // 构建消息内容
-            const content = buildMessageContent(message, imageTags);
+            const content = buildMessageContent(finalMessage, imageTags);
 
             // 构建用户消息
             const userMessage = {
@@ -416,6 +449,34 @@ document.addEventListener('DOMContentLoaded', async () => {
    if (isExtensionEnvironment) {
     initWebpageMenu({ webpageQAContainer, webpageContentMenu });
    }
+
+   // 初始化 NetworkMonitor 组件（保留以支持旧的展示方式，但主要使用NetworkReferenceBar）
+   const networkMonitorContainer = document.createElement('div');
+   networkMonitorContainer.id = 'network-monitor-container';
+   networkMonitorContainer.style.display = 'none';
+
+   // 将 NetworkMonitor 插入到聊天容器之前
+   chatContainer.parentElement.insertBefore(networkMonitorContainer, chatContainer);
+
+   const networkMonitor = new NetworkMonitor();
+   networkMonitor.init(networkMonitorContainer, (formattedRequest) => {
+       // 当用户点击"发送到对话"时，将格式化的请求插入到消息输入框
+       messageInput.value = `请帮我分析以下网络请求:\n\n${formattedRequest}`;
+       messageInput.dispatchEvent(new Event('input', { bubbles: true }));
+       messageInput.focus();
+   });
+
+   console.log('[Main] NetworkMonitor initialized');
+
+   // 初始化 NetworkReferenceBar 组件（新的引用栏）
+   const networkReferenceContainer = document.getElementById('network-reference-container');
+   networkReferenceBar = new NetworkReferenceBar();
+   networkReferenceBar.init(networkReferenceContainer, (updatedRequests) => {
+       // 当删除引用时的回调
+       console.log('[Main] Network references updated:', updatedRequests.length);
+   });
+
+   console.log('[Main] NetworkReferenceBar initialized');
 
     // 设置菜单的显示和隐藏逻辑
     let menuTimeout;
