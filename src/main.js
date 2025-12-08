@@ -172,6 +172,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         await loadChatContent(currentChat, chatContainer);
     }
 
+    // 根据对话是否有消息来显示或隐藏快捷卡片
+    const hasMessages = currentChat && currentChat.messages && currentChat.messages.length > 0;
+    toggleQuickChatOptions(!hasMessages);
+
     if ((!currentChat || currentChat.messages.length === 0) && isExtensionEnvironment) {
         const currentTab = await browserAdapter.getCurrentTab();
         if (currentTab) {

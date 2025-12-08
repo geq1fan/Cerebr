@@ -2,6 +2,7 @@ import { createImageTag } from '../utils/ui.js';
 import { showContextMenu, hideContextMenu, copyMessageContent } from './context-menu.js';
 import { handleImageDrop } from '../utils/image.js';
 import { updateAIMessage } from '../handlers/message-handler.js';
+import { toggleQuickChatOptions } from './quick-chat.js';
 
 /**
  * 初始化聊天容器的所有功能
@@ -341,6 +342,11 @@ export function initChatContainer({
                 if (currentChat && messageIndex !== -1) {
                     currentChat.messages.splice(messageIndex, 1);
                     chatManager.saveChats();
+
+                    // 如果对话变空，显示快捷卡片
+                    if (currentChat.messages.length === 0) {
+                        toggleQuickChatOptions(true);
+                    }
                 }
 
                 // 隐藏右键菜单
