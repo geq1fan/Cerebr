@@ -17,3 +17,7 @@ build/
 # IDE
 .vscode/
 .idea/
+
+.specify/
+specs/
+.claude/

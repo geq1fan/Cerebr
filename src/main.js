@@ -344,32 +344,41 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
             // 获取网络请求引用
             const networkReferences = networkReferenceBar ? networkReferenceBar.getRequests() : [];
-            let finalMessage = message;
 
-            // 如果有网络请求引用，将其格式化并添加到消息开头
+            // 准备用户消息内容（不包含网络请求文本）
+            const content = buildMessageContent(message, imageTags);
+
+            // 用于发送给 API 的消息内容（包含格式化的网络请求文本）
+            let apiContent = content;
             if (networkReferences.length > 0 && networkReferenceBar) {
                 const formattedReferences = networkReferenceBar.formatRequestsForAI();
-                finalMessage = formattedReferences + '\n\n---\n\n' + message;
-
-                // 发送后清空引用栏
-                networkReferenceBar.clear();
+                apiContent = buildMessageContent(formattedReferences + '\n\n---\n\n' + message, imageTags);
             }
 
-            // 构建消息内容
-            const content = buildMessageContent(finalMessage, imageTags);
-
-            // 构建用户消息
+            // 构建用户消息对象（用于显示和保存，包含原始网络请求数据）
             const userMessage = {
                 role: "user",
-                content: content
+                content: content,
+                networkRequests: networkReferences.length > 0 ? networkReferences : undefined
             };
 
-            // 先添加用户消息到界面和历史记录
+            // 构建发送给 API 的消息（使用格式化后的内容）
+            const userMessageForAPI = {
+                role: "user",
+                content: apiContent
+            };
+
+            // 先添加用户消息到界面和历史记录（使用原始内容+网络请求数据）
             await appendMessage({
                 text: userMessage,
                 sender: 'user',
                 chatContainer,
             });
+
+            // 清空引用栏
+            if (networkReferences.length > 0) {
+                networkReferenceBar.clear();
+            }
 
             // 隐藏选项按钮区域
             toggleQuickChatOptions(false);
@@ -377,10 +386,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             // 清空输入框并调整高度
             clearMessageInput(messageInput, uiConfig);
 
-            // 构建消息数组
+            // 构建消息数组（发送给 API 使用格式化内容）
             const currentChat = chatManager.getCurrentChat();
             const messages = currentChat ? [...currentChat.messages] : [];  // 从chatManager获取消息历史
-            messages.push(userMessage);
+            messages.push(userMessageForAPI);
+
+            // 保存到历史记录（使用原始内容+网络请求数据）
             chatManager.addMessageToCurrentChat(userMessage);
 
             // 显示等待动画

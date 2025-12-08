@@ -153,6 +153,28 @@ export async function appendMessage({
     mainContent.innerHTML = processMathAndMarkdown(messageHtml);
     messageDiv.appendChild(mainContent);
 
+    // 渲染网络请求组件（如果有）
+    if (typeof text === 'object' && text.networkRequests && text.networkRequests.length > 0) {
+        try {
+            const { MessageNetworkRequests } = await import('../components/message-network-requests.js');
+            const networkRequestsComponent = new MessageNetworkRequests(text.networkRequests);
+            const networkRequestsHTML = networkRequestsComponent.render();
+
+            if (networkRequestsHTML) {
+                const networkRequestsContainer = document.createElement('div');
+                networkRequestsContainer.innerHTML = networkRequestsHTML.trim();
+                const networkRequestsElement = networkRequestsContainer.firstElementChild;
+
+                if (networkRequestsElement) {
+                    messageDiv.appendChild(networkRequestsElement);
+                    networkRequestsComponent.bindEvents(messageDiv);
+                }
+            }
+        } catch (error) {
+            console.error('[MessageHandler] Failed to render network requests:', error);
+        }
+    }
+
     // 渲染 LaTeX 公式
     try {
         await renderMathInElement(messageDiv);

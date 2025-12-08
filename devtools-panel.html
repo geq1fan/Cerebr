@@ -53,9 +53,31 @@
       user-select: none;
     }
 
-    .requests-container {
-      overflow-y: auto;
+    /* Split View 布局 */
+    .main-content {
+      display: flex;
       height: calc(100vh - 100px);
+      gap: 1px;
+      background: #3c3c3c;
+    }
+
+    .requests-list {
+      flex: 0 0 40%;
+      overflow-y: auto;
+      background: #1e1e1e;
+    }
+
+    .request-detail-panel {
+      flex: 1;
+      overflow-y: auto;
+      background: #1e1e1e;
+      padding: 16px;
+    }
+
+    .detail-empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: #888;
     }
 
     .request-item {
@@ -69,6 +91,12 @@
 
     .request-item:hover {
       background: #2a2a2a;
+    }
+
+    /* 选中的请求高亮 */
+    .request-item.selected {
+      background: #2a4a6a;
+      border-left: 3px solid #569cd6;
     }
 
     .request-checkbox {
@@ -175,6 +203,132 @@
       font-size: 11px;
       cursor: pointer;
     }
+
+    /* 详情面板样式 */
+    .request-detail-panel .detail-header {
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #333;
+    }
+
+    .request-detail-panel .detail-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 8px;
+      word-break: break-all;
+    }
+
+    .request-detail-panel .detail-meta {
+      display: flex;
+      gap: 12px;
+      font-size: 12px;
+      color: #cccccc;
+      flex-wrap: wrap;
+    }
+
+    .detail-section {
+      margin-bottom: 16px;
+    }
+
+    .detail-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .detail-section h4 {
+      margin: 0 0 8px 0;
+      font-size: 13px;
+      font-weight: 600;
+      color: #dcdcaa;
+    }
+
+    .detail-truncated {
+      font-size: 11px;
+      color: #f48771;
+      font-weight: normal;
+    }
+
+    .detail-headers {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .detail-header-row {
+      display: flex;
+      gap: 8px;
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    .detail-header-name {
+      font-weight: 600;
+      color: #9cdcfe;
+      min-width: 120px;
+      flex-shrink: 0;
+    }
+
+    .detail-header-value {
+      color: #cccccc;
+      word-break: break-all;
+      flex: 1;
+    }
+
+    .detail-code {
+      background: #0d0d0d;
+      border: 1px solid #333;
+      border-radius: 4px;
+      padding: 12px;
+      overflow-x: auto;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 11px;
+      line-height: 1.5;
+      color: #d4d4d4;
+      max-height: 300px;
+      overflow-y: auto;
+      margin: 0;
+    }
+
+    .detail-no-body {
+      color: #888;
+      font-style: italic;
+      font-size: 12px;
+    }
+
+    .detail-timing {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 12px;
+      color: #cccccc;
+    }
+
+    /* 滚动条样式 */
+    .detail-code::-webkit-scrollbar,
+    .requests-list::-webkit-scrollbar,
+    .request-detail-panel::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    .detail-code::-webkit-scrollbar-track,
+    .requests-list::-webkit-scrollbar-track,
+    .request-detail-panel::-webkit-scrollbar-track {
+      background: #1e1e1e;
+    }
+
+    .detail-code::-webkit-scrollbar-thumb,
+    .requests-list::-webkit-scrollbar-thumb,
+    .request-detail-panel::-webkit-scrollbar-thumb {
+      background: #555;
+      border-radius: 4px;
+    }
+
+    .detail-code::-webkit-scrollbar-thumb:hover,
+    .requests-list::-webkit-scrollbar-thumb:hover,
+    .request-detail-panel::-webkit-scrollbar-thumb:hover {
+      background: #666;
+    }
   </style>
 </head>
 <body>
@@ -217,10 +371,20 @@
     </span>
   </div>
 
-  <!-- Request List -->
-  <div class="requests-container" id="requests-container">
-    <div class="empty-state">
-      等待网络请求...
+  <!-- Main Content: Split View -->
+  <div class="main-content">
+    <!-- 左侧：请求列表 -->
+    <div class="requests-list" id="requests-list">
+      <div class="empty-state">
+        等待网络请求...
+      </div>
+    </div>
+
+    <!-- 右侧：详情面板 -->
+    <div class="request-detail-panel" id="request-detail-panel">
+      <div class="detail-empty">
+        <p>点击请求查看详情</p>
+      </div>
     </div>
   </div>
 

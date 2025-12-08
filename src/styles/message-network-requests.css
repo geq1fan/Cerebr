@@ -1,0 +1,287 @@
+/**
+ * Message Network Requests Styles
+ * 消息内网络请求样式
+ */
+
+.message-network-requests {
+  margin: 12px 0;
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 8px;
+  background: var(--message-bg, #f5f5f5);
+  overflow: hidden;
+}
+
+.mnr-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: var(--hover-bg, rgba(0, 0, 0, 0.03));
+  border-bottom: 1px solid var(--border-color, #e0e0e0);
+}
+
+.mnr-title {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text-color, #333333);
+}
+
+.mnr-count {
+  font-size: 12px;
+  color: var(--text-secondary, #666666);
+}
+
+.mnr-list {
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* 单个请求 */
+.mnr-request {
+  background: var(--bg-color, #ffffff);
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.mnr-request-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  font-size: 12px;
+}
+
+.mnr-request-header:hover {
+  background: var(--hover-bg, rgba(0, 0, 0, 0.03));
+}
+
+.mnr-expand-icon {
+  font-size: 10px;
+  color: var(--text-secondary, #666666);
+  min-width: 12px;
+  transition: transform 0.2s ease;
+}
+
+.mnr-method {
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+  text-transform: uppercase;
+  min-width: 45px;
+  text-align: center;
+}
+
+.mnr-method.method-get {
+  background: rgba(76, 175, 80, 0.1);
+  color: #4caf50;
+}
+
+.mnr-method.method-post {
+  background: rgba(33, 150, 243, 0.1);
+  color: #2196f3;
+}
+
+.mnr-method.method-put {
+  background: rgba(255, 152, 0, 0.1);
+  color: #ff9800;
+}
+
+.mnr-method.method-delete {
+  background: rgba(244, 67, 54, 0.1);
+  color: #f44336;
+}
+
+.mnr-method.method-patch {
+  background: rgba(156, 39, 176, 0.1);
+  color: #9c27b0;
+}
+
+.mnr-status {
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+  min-width: 35px;
+  text-align: center;
+}
+
+.mnr-status.status-success {
+  background: rgba(76, 175, 80, 0.1);
+  color: #4caf50;
+}
+
+.mnr-status.status-redirect {
+  background: rgba(255, 193, 7, 0.1);
+  color: #ffc107;
+}
+
+.mnr-status.status-client-error {
+  background: rgba(255, 152, 0, 0.1);
+  color: #ff9800;
+}
+
+.mnr-status.status-server-error {
+  background: rgba(244, 67, 54, 0.1);
+  color: #f44336;
+}
+
+.mnr-url {
+  flex: 1;
+  color: var(--text-color, #333333);
+  font-family: 'Consolas', 'Monaco', monospace;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+}
+
+/* 详情区域 */
+.mnr-details {
+  padding: 12px;
+  background: var(--bg-color, #ffffff);
+  border-top: 1px solid var(--border-color, #e0e0e0);
+  font-size: 12px;
+}
+
+.mnr-section {
+  margin-bottom: 12px;
+}
+
+.mnr-section:last-child {
+  margin-bottom: 0;
+}
+
+.mnr-section h4 {
+  margin: 0 0 6px 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-color, #333333);
+}
+
+.mnr-truncated {
+  font-size: 10px;
+  color: #f44336;
+  font-weight: normal;
+}
+
+.mnr-headers {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.mnr-header-row {
+  display: flex;
+  gap: 6px;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.mnr-header-name {
+  font-weight: 600;
+  color: var(--text-secondary, #666666);
+  min-width: 100px;
+  flex-shrink: 0;
+}
+
+.mnr-header-value {
+  color: var(--text-color, #333333);
+  word-break: break-all;
+  flex: 1;
+}
+
+.mnr-code {
+  background: var(--message-bg, #f5f5f5);
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 4px;
+  padding: 8px;
+  overflow-x: auto;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--text-color, #333333);
+  max-height: 200px;
+  overflow-y: auto;
+  margin: 0;
+}
+
+.mnr-no-body {
+  color: var(--text-secondary, #999999);
+  font-style: italic;
+  font-size: 11px;
+}
+
+.mnr-timing {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 11px;
+  color: var(--text-color, #333333);
+}
+
+/* 代码块滚动条 */
+.mnr-code::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.mnr-code::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.mnr-code::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb, #cccccc);
+  border-radius: 3px;
+}
+
+.mnr-code::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover, #999999);
+}
+
+/* 深色模式适配 */
+@media (prefers-color-scheme: dark) {
+  .mnr-header {
+    background: var(--hover-bg, rgba(255, 255, 255, 0.03));
+  }
+
+  .mnr-request-header:hover {
+    background: var(--hover-bg, rgba(255, 255, 255, 0.03));
+  }
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .mnr-header {
+    padding: 8px 10px;
+  }
+
+  .mnr-title {
+    font-size: 12px;
+  }
+
+  .mnr-count {
+    font-size: 11px;
+  }
+
+  .mnr-request-header {
+    font-size: 11px;
+    gap: 6px;
+  }
+
+  .mnr-method,
+  .mnr-status {
+    font-size: 10px;
+    padding: 2px 4px;
+    min-width: 40px;
+  }
+
+  .mnr-url {
+    font-size: 11px;
+  }
+}

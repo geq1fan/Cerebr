@@ -9,6 +9,7 @@ export class NetworkReferenceBar {
     this.container = null;
     this.requests = [];
     this.isExpanded = false;
+    this.expandedRequestIds = new Set(); // 管理每个请求详情展开
     this.onRemove = null; // 回调函数：当删除引用时调用
   }
 
@@ -182,10 +183,12 @@ export class NetworkReferenceBar {
   renderRequestItem(request, index) {
     const statusClass = this.getStatusClass(request.status);
     const methodClass = `method-${request.method.toLowerCase()}`;
+    const isDetailExpanded = this.expandedRequestIds.has(request.id);
 
     return `
       <div class="reference-item" data-index="${index}">
-        <div class="item-header">
+        <div class="item-header" data-action="toggle-detail" data-id="${request.id}">
+          <span class="detail-expand-icon">${isDetailExpanded ? '▼' : '▶'}</span>
           <span class="item-method ${methodClass}">${request.method}</span>
           <span class="item-status ${statusClass}">${request.status}</span>
           <span class="item-url" title="${request.url}">${this.truncateURL(request.url, 60)}</span>
@@ -195,15 +198,112 @@ export class NetworkReferenceBar {
             </svg>
           </button>
         </div>
+        ${isDetailExpanded ? this.renderRequestDetails(request) : ''}
       </div>
     `;
+  }
+
+  /**
+   * 渲染请求详情
+   */
+  renderRequestDetails(request) {
+    const requestBody = this.formatBody(request.requestBody);
+    const responseBody = this.formatResponseBody(request.responseBody);
+
+    return `
+      <div class="reference-item-details">
+        <!-- 请求头 -->
+        <div class="ref-section">
+          <h4>请求头</h4>
+          <div class="ref-headers">
+            ${request.requestHeaders.map(h => `
+              <div class="ref-header-row">
+                <span class="ref-header-name">${h.name}:</span>
+                <span class="ref-header-value">${h.value}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        ${requestBody ? `
+        <div class="ref-section">
+          <h4>请求体</h4>
+          <pre class="ref-code">${requestBody}</pre>
+        </div>
+        ` : ''}
+
+        <!-- 响应头 -->
+        <div class="ref-section">
+          <h4>响应头</h4>
+          <div class="ref-headers">
+            ${request.responseHeaders.map(h => `
+              <div class="ref-header-row">
+                <span class="ref-header-name">${h.name}:</span>
+                <span class="ref-header-value">${h.value}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        ${responseBody ? `
+        <div class="ref-section">
+          <h4>响应体 ${request.responseBody?.truncated ? `<span class="ref-truncated">(已截断: ${this.formatBytes(request.responseBody.originalSize)})</span>` : ''}</h4>
+          <pre class="ref-code">${responseBody}</pre>
+        </div>
+        ` : '<div class="ref-section"><h4>响应体</h4><p class="ref-no-body">无响应体</p></div>'}
+
+        <!-- 时间信息 -->
+        <div class="ref-section">
+          <h4>时间</h4>
+          <div class="ref-timing">
+            <div>开始: ${new Date(request.timing.startTime).toLocaleString()}</div>
+            <div>耗时: ${request.timing.duration.toFixed(2)} ms</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * 格式化请求体
+   */
+  formatBody(body) {
+    if (!body) return '';
+    if (typeof body === 'string') return body;
+    if (typeof body === 'object') {
+      try {
+        return JSON.stringify(body, null, 2);
+      } catch {
+        return String(body);
+      }
+    }
+    return String(body);
+  }
+
+  /**
+   * 格式化响应体
+   */
+  formatResponseBody(body) {
+    if (!body || !body.content) return '';
+
+    if (body.encoding === 'json') {
+      try {
+        return JSON.stringify(body.content, null, 2);
+      } catch {
+        return String(body.content);
+      }
+    } else if (body.encoding === 'base64') {
+      return `[Binary data: ${body.content.length} characters]`;
+    } else {
+      return String(body.content);
+    }
   }
 
   /**
    * 绑定事件
    */
   bindEvents() {
-    // 展开/收起
+    // 展开/收起整个列表
     const header = this.container.querySelector('[data-action="toggle-expand"]');
     if (header) {
       header.addEventListener('click', () => this.toggleExpand());
@@ -227,6 +327,18 @@ export class NetworkReferenceBar {
         this.removeItem(index);
       });
     });
+
+    // 详情展开/折叠
+    const detailToggles = this.container.querySelectorAll('[data-action="toggle-detail"]');
+    detailToggles.forEach(toggle => {
+      toggle.addEventListener('click', (e) => {
+        // 如果点击的是删除按钮，不触发展开
+        if (e.target.closest('.remove-item-btn')) return;
+
+        const id = toggle.dataset.id;
+        this.toggleDetail(id);
+      });
+    });
   }
 
   /**
@@ -238,11 +350,27 @@ export class NetworkReferenceBar {
   }
 
   /**
+   * 切换单个请求详情的展开/收起状态
+   */
+  toggleDetail(requestId) {
+    if (this.expandedRequestIds.has(requestId)) {
+      this.expandedRequestIds.delete(requestId);
+    } else {
+      this.expandedRequestIds.add(requestId);
+    }
+    this.render();
+  }
+
+  /**
    * 移除单个请求
    */
   removeItem(index) {
     if (index >= 0 && index < this.requests.length) {
+      const requestId = this.requests[index].id;
       this.requests.splice(index, 1);
+
+      // 清理展开状态
+      this.expandedRequestIds.delete(requestId);
 
       if (this.requests.length === 0) {
         this.clear();
