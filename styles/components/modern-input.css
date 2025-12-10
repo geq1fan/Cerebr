@@ -125,20 +125,27 @@
 /* 输入卡片（统一容器） */
 .input-card {
   display: flex;
-  align-items: flex-end;
-  gap: 12px;
+  flex-direction: column;  /* 垂直布局：textarea 在上，控制栏在下 */
+  gap: 10px;  /* 减小间距 */
   padding: 10px 14px;
   background: var(--cerebr-card-bg);
   border: 1px solid var(--cerebr-border-color);
   border-radius: 16px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   transition: border-color 0.2s, box-shadow 0.2s;
-  position: relative; /* 为 select 下拉菜单建立定位上下文 */
+  position: relative;
 }
 
 .input-card:focus-within {
   border-color: var(--cerebr-highlight-border-color);
   box-shadow: 0 2px 12px rgba(0, 122, 255, 0.12);
+}
+
+/* 控制栏（第二行，底部）*/
+.control-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 /* 左侧功能按钮 */
@@ -149,8 +156,8 @@
 }
 
 .icon-button {
-  width: 32px;
-  height: 32px;
+  width: 36px;  /* 统一高度：32px → 36px */
+  height: 36px;
   border-radius: 50%;
   border: none;
   background: transparent;
@@ -193,7 +200,7 @@
 
 /* 中间输入框 */
 .message-textarea {
-  flex: 1;
+  width: 100%;  /* 全宽显示 */
   border: none;
   background: transparent;
   color: var(--cerebr-text-color);
@@ -203,8 +210,9 @@
   outline: none;
   min-height: 24px;
   max-height: 200px;
-  padding: 8px 0;
+  padding: 6px 0;  /* 减小垂直间距 */
   line-height: 1.5;
+  box-sizing: border-box;
 }
 
 .message-textarea::placeholder {
@@ -212,16 +220,9 @@
   opacity: 0.5;
 }
 
-/* 右侧操作区 */
-.input-actions-right {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  position: relative; /* 为 select 下拉菜单提供额外的定位上下文 */
-}
-
 .model-selector {
-  padding: 6px 10px;
+  height: 36px;  /* 统一高度 */
+  padding: 0 10px;
   border: 1px solid var(--cerebr-border-color);
   border-radius: 8px;
   background: var(--cerebr-bg-color);
@@ -235,6 +236,8 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
+  flex-shrink: 0;  /* 防止被压缩 */
+  position: relative;  /* 为下拉菜单提供定位上下文 */
 }
 
 .model-selector:hover {
@@ -247,8 +250,8 @@
 }
 
 .send-button {
-  width: 40px;
-  height: 40px;
+  width: 36px;  /* 统一高度：40px → 36px */
+  height: 36px;
   border-radius: 50%;
   border: none;
   background: var(--cerebr-button-disabled-bg, #e0e0e0);
@@ -356,17 +359,27 @@
 
   .input-card {
     padding: 8px 10px;
+    gap: 8px;  /* 缩小间距 */
+  }
+
+  .control-bar {  /* 新增：控制栏响应式 */
     gap: 8px;
   }
 
   .icon-button {
-    width: 28px;
-    height: 28px;
+    width: 32px;  /* 移动端缩小为 32px */
+    height: 32px;
+  }
+
+  .model-selector {
+    height: 32px;  /* 移动端缩小为 32px */
+    max-width: 100px;
+    font-size: 12px;
   }
 
   .send-button {
-    width: 36px;
-    height: 36px;
+    width: 32px;  /* 移动端缩小为 32px */
+    height: 32px;
   }
 
   .image-preview-item {
