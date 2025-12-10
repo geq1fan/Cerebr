@@ -5,7 +5,7 @@
     padding: 15px;
     padding-right: 8px; /* 留出滾動條空間，避免內容重疊 */
     padding-top: calc(15px + env(safe-area-inset-top));
-    padding-bottom: calc(120px + env(safe-area-inset-bottom));
+    padding-bottom: calc(160px + env(safe-area-inset-bottom)); /* 为输入框和快捷卡片留出空间 */
     scrollbar-width: thin;
     scrollbar-color: var(--cerebr-card-border-color) transparent;
     min-height: 100%;
@@ -43,5 +43,5 @@
 }
 
 .keyboard-visible #chat-container {
-    padding-bottom: calc(120px + env(safe-area-inset-bottom) + var(--keyboard-height, 0px));
+    padding-bottom: calc(160px + env(safe-area-inset-bottom) + var(--keyboard-height, 0px)); /* 同步更新键盘显示时的间距 */
 }

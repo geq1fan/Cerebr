@@ -18,10 +18,52 @@
     box-shadow: 0 1px 2px var(--cerebr-image-tag-shadow);
 }
 
+/* 消息中的图片标签应该独占一行，且在文字上方 */
+.message .image-tag {
+    display: flex;
+    margin: 8px 0;
+    margin-left: 0;
+    margin-right: auto;
+}
+
+/* 隐藏消息中图片标签的删除按钮 */
+.message .image-tag .delete-btn {
+    display: none;
+}
+
+/* 消息中的图片标签样式调整 */
+.message .image-tag {
+    padding: 0;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    height: auto;
+    cursor: pointer;
+}
+
+/* 消息中的图片缩略图放大显示 */
+.message .image-tag img {
+    width: 120px;
+    height: 120px;
+    border-radius: 8px;
+    border: 1px solid var(--cerebr-border-color);
+}
+
 .image-tag:hover {
     background: var(--cerebr-image-tag-hover-bg);
     transform: translateY(-1px);
     box-shadow: 0 2px 4px var(--cerebr-button-hover-bg);
+}
+
+/* 消息中的图片悬停效果 */
+.message .image-tag:hover {
+    background: transparent;
+    transform: scale(1.02);
+    box-shadow: none;
+}
+
+.message .image-tag:hover img {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .image-tag:active {

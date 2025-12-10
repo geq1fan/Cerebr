@@ -71,9 +71,13 @@ export async function appendMessage({
 
     let messageHtml = '';
     if (Array.isArray(textContent)) {
+        // 分离图片和文本，确保图片显示在文本上方
+        const images = [];
+        let textParts = [];
+
         textContent.forEach(item => {
             if (item.type === "text") {
-                messageHtml += item.text;
+                textParts.push(item.text);
                 textContent = item.text;
             } else if (item.type === "image_url") {
                 const imageTag = createImageTag({
@@ -94,9 +98,12 @@ export async function appendMessage({
                         }
                     }
                 });
-                messageHtml += imageTag.outerHTML;
+                images.push(imageTag.outerHTML);
             }
         });
+
+        // 图片在上，文本在下
+        messageHtml = images.join('') + textParts.join('');
     } else {
         messageHtml = textContent;
     }

@@ -1,0 +1,386 @@
+/* 现代输入框样式 - 基于 Claude.ai 设计 */
+
+/* 隐藏旧输入框中的元素（保留 settings-button 和 settings-menu） */
+#input-container {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  min-height: 0 !important;
+  position: fixed !important;
+  bottom: auto !important;
+  top: 16px !important;
+  left: 16px !important;
+  right: auto !important;
+  width: auto !important;
+  z-index: 101 !important;
+}
+
+#message-input-old,
+#api-selector-old {
+  display: none !important;
+}
+
+/* 确保 settings-button 在新位置正确显示 */
+#settings-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  border: 1px solid var(--cerebr-border-color);
+  background: var(--cerebr-card-bg);
+  color: var(--cerebr-icon-color);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+#settings-button:hover {
+  background: var(--cerebr-button-hover-bg);
+}
+
+#settings-button svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* 修复 settings-menu 在新布局中的位置 */
+#settings-menu {
+  position: fixed !important;
+  top: 64px !important;
+  left: 16px !important;
+  bottom: auto !important;
+  margin-bottom: 0 !important;
+}
+
+/* 隐藏旧的快捷卡片 */
+#quick-chat-options-old {
+  display: none !important;
+}
+
+/* 外层包装器 */
+#input-wrapper {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--cerebr-bg-color);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 800px;
+  margin: 0 auto;
+  z-index: 100;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom)); /* 确保底部安全区域 */
+}
+
+/* 图片预览区 */
+.image-previews {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px;
+  background: var(--cerebr-card-bg);
+  border-radius: 12px;
+  border: 1px solid var(--cerebr-border-color);
+}
+
+.image-preview-item {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--cerebr-border-color);
+}
+
+.image-preview-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.remove-image {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.image-preview-item:hover .remove-image {
+  opacity: 1;
+}
+
+/* 输入卡片（统一容器） */
+.input-card {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--cerebr-card-bg);
+  border: 1px solid var(--cerebr-border-color);
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  position: relative; /* 为 select 下拉菜单建立定位上下文 */
+}
+
+.input-card:focus-within {
+  border-color: var(--cerebr-highlight-border-color);
+  box-shadow: 0 2px 12px rgba(0, 122, 255, 0.12);
+}
+
+/* 左侧功能按钮 */
+.input-actions-left {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.icon-button {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--cerebr-icon-color);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: background-color 0.2s;
+  flex-shrink: 0;
+}
+
+.icon-button:hover {
+  background: var(--cerebr-button-hover-bg);
+}
+
+.icon-button svg {
+  width: 18px;
+  height: 18px;
+}
+
+.attachment-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background: #ff3b30;
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  box-shadow: 0 0 0 2px var(--cerebr-card-bg);
+}
+
+/* 中间输入框 */
+.message-textarea {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--cerebr-text-color);
+  font-size: 15px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  resize: none;
+  outline: none;
+  min-height: 24px;
+  max-height: 200px;
+  padding: 8px 0;
+  line-height: 1.5;
+}
+
+.message-textarea::placeholder {
+  color: var(--cerebr-text-color);
+  opacity: 0.5;
+}
+
+/* 右侧操作区 */
+.input-actions-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative; /* 为 select 下拉菜单提供额外的定位上下文 */
+}
+
+.model-selector {
+  padding: 6px 10px;
+  border: 1px solid var(--cerebr-border-color);
+  border-radius: 8px;
+  background: var(--cerebr-bg-color);
+  color: var(--cerebr-text-color);
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s;
+  max-width: 150px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.model-selector:hover {
+  border-color: var(--cerebr-highlight-border-color);
+}
+
+.model-selector:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.send-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: var(--cerebr-button-disabled-bg, #e0e0e0);
+  color: var(--cerebr-icon-color);
+  cursor: not-allowed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  opacity: 0.4;
+  flex-shrink: 0;
+}
+
+.send-button:not(:disabled) {
+  background: #d97757; /* 茶色/橙色，参考 Claude.ai */
+  color: white;
+  cursor: pointer;
+  opacity: 1;
+}
+
+.send-button:not(:disabled):hover {
+  background: #c46647;
+  transform: scale(1.05);
+}
+
+.send-button:not(:disabled):active {
+  transform: scale(0.95);
+}
+
+.send-button svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* 快捷操作卡片 - 基于 Claude.ai 设计 */
+.quick-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: flex-start; /* 左对齐，参考 Claude.ai */
+}
+
+/* 覆盖旧的 quick-chat.css 中的固定定位 */
+#quick-chat-options {
+  position: static !important; /* 取消固定定位 */
+  bottom: auto !important;
+  left: auto !important;
+  right: auto !important;
+  z-index: auto !important;
+  padding: 0 !important;
+  padding-bottom: 0 !important;
+  background-color: transparent !important;
+  border-top: none !important;
+  transform: none !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+.quick-action-card {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: 1px solid transparent;
+  border-radius: 20px; /* 更圆润的圆角，参考 Claude.ai */
+  background: var(--cerebr-message-ai-bg); /* 使用更浅的背景色 */
+  color: var(--cerebr-text-color);
+  font-size: 13px; /* 更小的字体 */
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  pointer-events: auto;
+  box-shadow: none;
+}
+
+.quick-action-card:hover {
+  background: var(--cerebr-button-hover-bg);
+  border-color: var(--cerebr-border-color);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.quick-action-card:active {
+  transform: scale(0.98);
+  box-shadow: none;
+}
+
+.quick-icon {
+  font-size: 16px; /* 更小的图标 */
+  line-height: 1;
+  opacity: 0.9;
+}
+
+.quick-label {
+  font-weight: 450; /* 更轻的字重 */
+  opacity: 0.95;
+}
+
+/* 响应式适配 */
+@media (max-width: 768px) {
+  #input-wrapper {
+    padding: 12px;
+    max-width: 100%;
+  }
+
+  .input-card {
+    padding: 8px 10px;
+    gap: 8px;
+  }
+
+  .icon-button {
+    width: 28px;
+    height: 28px;
+  }
+
+  .send-button {
+    width: 36px;
+    height: 36px;
+  }
+
+  .image-preview-item {
+    width: 60px;
+    height: 60px;
+  }
+
+  .quick-action-card {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .model-selector {
+    max-width: 100px;
+    font-size: 12px;
+  }
+}

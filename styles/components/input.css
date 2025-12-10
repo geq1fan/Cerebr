@@ -53,3 +53,45 @@
 #message-input br:first-child {
     display: block;
 }
+
+/* API 选择器样式 */
+#api-selector {
+    padding: 8px 12px;
+    margin-left: 8px;
+    border: 1px solid var(--cerebr-border-color);
+    border-radius: 6px;
+    background-color: var(--cerebr-input-bg);
+    color: var(--cerebr-text-color);
+    font-size: 13px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.2s ease;
+    max-width: 200px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+#api-selector:hover:not(:disabled) {
+    border-color: var(--cerebr-highlight-border-color);
+}
+
+#api-selector:focus {
+    border-color: var(--cerebr-highlight-border-color);
+    box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.1);
+}
+
+/* 禁用状态（只有一个 API 时） */
+#api-selector:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: var(--cerebr-input-bg);
+}
+
+/* 选择器下拉选项 */
+#api-selector option {
+    padding: 8px;
+    background-color: var(--cerebr-input-bg);
+    color: var(--cerebr-text-color);
+}

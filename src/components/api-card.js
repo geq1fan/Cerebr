@@ -506,12 +506,24 @@ export function createCardCallbacks({
         onCardDelete: (index) => {
             if (apiConfigs.length > 1) {
                 apiConfigs.splice(index, 1);
-                if (selectedConfigIndex >= apiConfigs.length) {
-                    selectedConfigIndex = apiConfigs.length - 1;
+
+                // 调整 selectedConfigIndex
+                if (selectedConfigIndex === index) {
+                    // 删除的是当前选中的，回退到第一个
+                    selectedConfigIndex = 0;
+                } else if (selectedConfigIndex > index) {
+                    // 删除的在当前选中之前，索引需要减 1
+                    selectedConfigIndex--;
                 }
+
                 saveAPIConfigs();
                 renderAPICardsWithCallbacks();
                 updatePlaceholder();
+
+                // 通知对话框更新选择器
+                if (typeof window.renderAPISelector === 'function') {
+                    window.renderAPISelector();
+                }
             }
         },
         onCardChange: (index, newConfig) => {

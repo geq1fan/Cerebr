@@ -7,7 +7,7 @@ import { initChatContainer } from './components/chat-container.js';
 import { showImagePreview, hideImagePreview } from './utils/ui.js';
 import { renderAPICards, createCardCallbacks, selectCard } from './components/api-card.js';
 import { storageAdapter, syncStorageAdapter, browserAdapter, isExtensionEnvironment } from './utils/storage-adapter.js';
-import { initMessageInput, getFormattedMessageContent, buildMessageContent, clearMessageInput, handleWindowMessage, updatePermanentPlaceholder } from './components/message-input.js';
+import { initModernInput as initMessageInput, getFormattedMessageContent, buildMessageContent, clearMessageInput, handleWindowMessage, updatePermanentPlaceholder } from './components/modern-input.js';
 import './utils/viewport.js';
 import {
     hideChatList,
@@ -57,6 +57,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 常用聊天選項相關元素
     const quickChatContainer = document.getElementById('quick-chat-options');
     const quickChatSettingsPage = document.getElementById('quick-chat-settings-page');
+
+    // 主题和网页开关
+    const themeSwitch = document.getElementById('theme-switch');
+    const sendWebpageSwitch = document.getElementById('send-webpage-switch');
 
     // 修改: 创建一个对象引用来保存当前控制器
     const abortControllerRef = { current: null };
@@ -532,9 +536,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     // 主题切换
-    const themeSwitch = document.getElementById('theme-switch');
-    const sendWebpageSwitch = document.getElementById('send-webpage-switch');
-
     // 创建主题配置对象
     const themeConfig = {
         root: document.documentElement,
@@ -621,6 +622,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             onSave: saveAPIConfigs,
             cardSelector: '.api-card',
             onSelect: (selectedCard, index) => {
+                // 同步对话框选择器
+                if (typeof window.renderAPISelector === 'function') {
+                    window.renderAPISelector();
+                }
+
                 // 只有在点击卡片本身时才关闭设置面板
                 if (selectedCard && selectedCard.contains(event.target) && !selectedCard.querySelector('.model-name-container').contains(event.target)) {
                     apiSettings.classList.remove('visible');
@@ -723,8 +729,61 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
+    /**
+     * 渲染 API 选择器
+     * 显示所有可用的 API 配置，用户可以快速切换
+     */
+    function renderAPISelector() {
+        const selector = document.getElementById('api-selector');
+        if (!selector) return;
+
+        // 清空现有选项
+        selector.innerHTML = '';
+
+        // 渲染每个 API 配置
+        apiConfigs.forEach((config, index) => {
+            const option = document.createElement('option');
+            option.value = index;
+            option.textContent = config.modelName || `API ${index + 1}`;
+
+            // 设置当前选中项
+            if (index === selectedConfigIndex) {
+                option.selected = true;
+            }
+
+            selector.appendChild(option);
+        });
+
+        // 只有一个 API 时禁用选择器
+        selector.disabled = apiConfigs.length <= 1;
+    }
+
+    // 暴露给其他模块使用
+    window.renderAPISelector = renderAPISelector;
+
     // 等待 DOM 加载完成后再初始化
     await loadAPIConfigs();
+    renderAPISelector();  // 初始化 API 选择器
+
+    // API 选择器切换事件
+    const apiSelector = document.getElementById('api-selector');
+    if (apiSelector) {
+        apiSelector.addEventListener('change', (e) => {
+            const newIndex = parseInt(e.target.value, 10);
+
+            // 边界检查
+            if (newIndex >= 0 && newIndex < apiConfigs.length) {
+                // 更新选中索引 (会话级,不持久化)
+                selectedConfigIndex = newIndex;
+
+                // 同步 UI
+                updatePlaceholderWithCurrentModel();
+                renderAPICardsWithCallbacks();
+            } else {
+                console.error('无效的 API 索引:', newIndex);
+            }
+        });
+    }
 
     // 显示/隐藏 API 设置
     apiSettingsToggle.addEventListener('click', () => {

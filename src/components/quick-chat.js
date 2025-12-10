@@ -4,33 +4,39 @@
  */
 
 import { syncStorageAdapter } from '../utils/storage-adapter.js';
-import { clearMessageInput } from './message-input.js';
+import { clearMessageInput } from './modern-input.js';
 
-// 默認的常用聊天選項
+// 默認的常用聊天選項 - 基于 Claude.ai 设计
 const DEFAULT_QUICK_CHAT_OPTIONS = [
     {
         id: 'option-1',
-        title: '文章总结',
-        prompt: '请帮我总结这篇文章的主要内容',
-        icon: '📝'
+        title: 'Code',
+        prompt: '请帮我写一段代码',
+        icon: '◇'
     },
     {
         id: 'option-2',
-        title: '解释网页内容',
-        prompt: '请解释这个网页的内容',
-        icon: '🌐'
+        title: 'Write',
+        prompt: '请帮我写一篇文章',
+        icon: '✏︎'
     },
     {
         id: 'option-3',
-        title: '翻译内容',
-        prompt: '请将以下内容翻译成中文',
-        icon: '🔄'
+        title: 'Learn',
+        prompt: '请解释这个概念',
+        icon: '📖'
     },
     {
         id: 'option-4',
-        title: '代码解释',
-        prompt: '请解释这段代码的功能',
-        icon: '💻'
+        title: 'Summarize',
+        prompt: '帮我总结这段内容',
+        icon: '📋'
+    },
+    {
+        id: 'option-5',
+        title: 'Surprise me',
+        prompt: '给我一些有趣的建议',
+        icon: '✨'
     }
 ];
 
@@ -95,14 +101,14 @@ export async function initQuickChat({
 
     // 創建常用選項元素
     function createQuickChatOption(option) {
-        const optionElement = document.createElement('div');
-        optionElement.className = 'quick-chat-option';
+        const optionElement = document.createElement('button');
+        optionElement.className = 'quick-action-card';
         optionElement.dataset.prompt = option.prompt;
         optionElement.dataset.id = option.id;
 
         optionElement.innerHTML = `
-            <span class="quick-chat-icon">${option.icon}</span>
-            <span class="quick-chat-title">${option.title}</span>
+            <span class="quick-icon">${option.icon}</span>
+            <span class="quick-label">${option.title}</span>
         `;
 
         // 添加點擊事件
@@ -120,8 +126,8 @@ export async function initQuickChat({
         // 清空輸入框
         clearMessageInput(messageInput, uiConfig);
 
-        // 設置輸入框內容
-        messageInput.textContent = option.prompt;
+        // 設置輸入框內容（textarea 使用 value）
+        messageInput.value = option.prompt;
 
         // 觸發輸入事件以調整高度
         messageInput.dispatchEvent(new Event('input', { bubbles: true }));
@@ -129,8 +135,8 @@ export async function initQuickChat({
         // 聚焦輸入框
         messageInput.focus();
 
-        // 移動光標到末尾
-        moveCaretToEnd(messageInput);
+        // 移動光標到末尾（textarea 方式）
+        messageInput.setSelectionRange(messageInput.value.length, messageInput.value.length);
 
         // 隱藏選項按鈕區域（帶動畫效果）
         if (quickChatOptionsElement) {
