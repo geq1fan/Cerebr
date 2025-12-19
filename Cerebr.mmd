@@ -1,0 +1,142 @@
+graph TD
+    %% 用户交互层
+    subgraph 用户界面层
+        User([用户])
+        ExtIcon[扩展图标]
+        DevToolsPanel[DevTools面板]
+    end
+
+    %% Content Script层
+    subgraph Content Script层
+        ContentScript(content.js<br/>页面注入脚本)
+        Sidebar[(CerebrSidebar<br/>侧边栏容器)]
+        IFrame[index.html<br/>侧边栏UI]
+    end
+
+    %% Background Service Worker层
+    subgraph Background层
+        Background(background.js<br/>Service Worker)
+    end
+
+    %% 侧边栏应用层
+    subgraph 侧边栏应用
+        Main(main.js<br/>应用入口)
+        ChatContainer[chat-container.js<br/>聊天容器]
+        MessageInput[modern-input.js<br/>消息输入]
+        ChatList[chat-list.js<br/>对话列表]
+        QuickChat[quick-chat.js<br/>快捷选项]
+        NetworkRefBar[network-reference-bar.js<br/>网络引用栏]
+        NetworkMon[network-monitor.js<br/>网络监控]
+    end
+
+    %% 业务逻辑层
+    subgraph 业务逻辑层
+        ChatManager[(chat-manager.js<br/>对话管理器)]
+        ChatService(chat.js<br/>API服务)
+        MessageHandler(message-handler.js<br/>消息处理器)
+        WebpageMenu(webpage-menu.js<br/>网页菜单)
+    end
+
+    %% 工具层
+    subgraph 工具层
+        StorageAdapter[(storage-adapter.js<br/>存储适配器)]
+        ThemeUtil(theme.js<br/>主题工具)
+        ImageUtil(image.js<br/>图片工具)
+        UIUtil(ui.js<br/>UI工具)
+    end
+
+    %% 数据层
+    subgraph 数据存储
+        ChromeStorage[(Chrome Storage<br/>本地存储)]
+        ChromeSync[(Chrome Sync<br/>同步存储)]
+    end
+
+    %% 外部服务
+    subgraph 外部服务
+        OpenAI>OpenAI API<br/>AI服务]
+        WebPage>网页内容<br/>DOM提取]
+        PDFLib>PDF.js<br/>PDF解析]
+    end
+
+    %% 用户交互流
+    User -->|点击图标| ExtIcon
+    User -->|打开DevTools| DevToolsPanel
+    ExtIcon -->|TOGGLE_SIDEBAR| Background
+    DevToolsPanel -->|网络请求数据| Background
+
+    %% Background消息路由
+    Background -->|注入脚本| ContentScript
+    Background -->|转发命令| ContentScript
+    Background -->|下载PDF| PDFLib
+
+    %% Content Script初始化
+    ContentScript -->|创建Shadow DOM| Sidebar
+    Sidebar -->|加载| IFrame
+    IFrame -->|初始化| Main
+
+    %% 侧边栏应用初始化
+    Main -->|初始化组件| ChatContainer
+    Main -->|初始化组件| MessageInput
+    Main -->|初始化组件| ChatList
+    Main -->|初始化组件| QuickChat
+    Main -->|初始化组件| NetworkRefBar
+    Main -->|初始化组件| NetworkMon
+    Main -->|加载配置| StorageAdapter
+    Main -->|应用主题| ThemeUtil
+
+    %% 消息发送流程
+    User -->|输入消息| MessageInput
+    MessageInput -->|获取网络引用| NetworkRefBar
+    MessageInput -->|构建消息| MessageHandler
+    MessageHandler -->|保存消息| ChatManager
+    MessageHandler -->|调用API| ChatService
+    ChatService -->|HTTP请求| OpenAI
+    OpenAI -->|流式响应| ChatService
+    ChatService -->|更新消息| ChatManager
+    ChatManager -->|渲染消息| ChatContainer
+
+    %% 网页内容提取
+    User -->|启用网页问答| WebpageMenu
+    WebpageMenu -->|请求内容| ContentScript
+    ContentScript -->|提取DOM| WebPage
+    ContentScript -->|解析PDF| PDFLib
+    WebPage -->|返回内容| ChatService
+
+    %% DevTools网络监控流程
+    DevToolsPanel -->|捕获请求| Background
+    Background -->|转发数据| ContentScript
+    ContentScript -->|postMessage| IFrame
+    IFrame -->|添加引用| NetworkRefBar
+    NetworkRefBar -->|格式化请求| MessageInput
+
+    %% 对话管理流程
+    User -->|新建对话| ChatList
+    User -->|切换对话| ChatList
+    ChatList -->|管理对话| ChatManager
+    ChatManager -->|持久化| StorageAdapter
+    StorageAdapter -->|保存| ChromeStorage
+    StorageAdapter -->|同步| ChromeSync
+
+    %% 图片处理流程
+    User -->|拖放图片| Sidebar
+    Sidebar -->|转换Base64| ImageUtil
+    ImageUtil -->|插入消息| MessageInput
+
+    %% UI交互流程
+    ChatContainer -->|右键菜单| UIUtil
+    ChatContainer -->|复制/删除/重新生成| MessageHandler
+    MessageInput -->|图片预览| UIUtil
+    Main -->|主题切换| ThemeUtil
+
+    %% 样式定义
+    classDef frontend fill:#4A90E2,stroke:#2E5C8A,color:#fff
+    classDef backend fill:#50C878,stroke:#2E7D4E,color:#fff
+    classDef utility fill:#FF9500,stroke:#CC7700,color:#fff
+    classDef storage fill:#8E8E93,stroke:#5E5E63,color:#fff
+    classDef external fill:#9B59B6,stroke:#6C3483,color:#fff
+
+    class ExtIcon,DevToolsPanel,Sidebar,IFrame,ChatContainer,MessageInput,ChatList,QuickChat,NetworkRefBar,NetworkMon frontend
+    class ContentScript,Background,Main,ChatService,MessageHandler,WebpageMenu backend
+    class ChatManager,StorageAdapter,ThemeUtil,ImageUtil,UIUtil utility
+    class ChromeStorage,ChromeSync storage
+    class OpenAI,WebPage,PDFLib external

@@ -152,7 +152,19 @@ export async function callAPI({
                         }
 
                         try {
-                            const delta = JSON.parse(data).choices[0]?.delta;
+                            const parsed = JSON.parse(data);
+
+                            // 检测无效响应（choices 为 null 或空数组）
+                            if (parsed.choices === null || (Array.isArray(parsed.choices) && parsed.choices.length === 0)) {
+                                console.warn('[chat.js] API 返回无效响应: choices 为空', parsed);
+                                // 只在首次检测到时抛出错误
+                                if (!currentMessage.content && !currentMessage.reasoning_content) {
+                                    throw new Error('API 返回无效响应，可能是请求内容过大。请尝试减少网页内容后重试。');
+                                }
+                                continue;
+                            }
+
+                            const delta = parsed.choices?.[0]?.delta;
                             let hasUpdate = false;
 
                             // 优先处理原生reasoning_content

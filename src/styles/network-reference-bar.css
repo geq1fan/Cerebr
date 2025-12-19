@@ -7,11 +7,6 @@
   width: 100%;
   background: transparent;
   transition: all 0.3s ease;
-  position: fixed;
-  bottom: 60px; /* 输入框高度的估计值，需要根据实际调整 */
-  left: 0;
-  right: 0;
-  z-index: 999;
   max-height: 300px;
   overflow: hidden;
   /* 当display为none时不占用空间 */
